@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>JavaScript Event Model - Event Attributes</title>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    	div.container
+    	{
+    		width: 100px;
+
+    	}
+    </style>
+</head>
+<body>  
+	<div class="container" ondrop="drop(event)" ondragover="allowDrop(event); changeBucketState('open')">
+		<img id="bucket" src="img/bucket-close.jpg" onmouseover="changeBucketState('open')" onmouseout="changeBucketState('close')"/>  
+	</div>
+	<div id="content">
+		
+	</div>
+	<script type="text/javascript">
+		var maxSize = 80;
+	    var minSize = 20;
+	    var maxWidth = screen.width - 100;
+	    var maxHeight = screen.height - 300;
+	    var trashNumner = 20;
+
+	    createDivElements();
+	    addDragElements();
+
+		function createDivElements() {
+			var contentDiv = document.getElementById("content");
+			while (contentDiv.firstChild) contentDiv.removeChild(contentDiv.firstChild);
+
+			for (var i = 0; i < trashNumner; i++) {
+			    var div = document.createElement("div");
+			    div.innerHTML = "<img src='img/trash.jpg' id='" + i + "'/>";
+				makeDivStyles(div);				
+				contentDiv.appendChild(div);
+			}
+		}
+
+		function addDragElements(){
+			
+			var drag = function drag(ev){
+				ev.dataTransfer.setData("dragged-id", ev.target.id);
+			}
+
+			var drags = document.getElementsByClassName("draggable");
+			for(var i = 0, len = drags.length; i < len; i+=1){
+				drags[i].ondragstart = drag;
+			}
+		}
+
+		function makeDivStyles(div) {
+			div.className = "draggable";
+			div.draggable = "true";
+		    div.style.position = "absolute";
+		    var top = parseInt(Math.random() * (maxHeight - 40) + 50);
+		    div.style.top = top + "px";
+		    var left;
+		    if (top < 250) {
+		    	left = parseInt(Math.random() * (maxWidth - 40) + 100);
+		    }
+		    else {
+		    	left = parseInt(Math.random() * (maxWidth - 40));
+		    }
+		    div.style.left = left + "px";		    
+		}
+
+		var img = document.getElementById("bucket");
+		
+		function changeBucketState(state){
+			img.src="img/bucket-"+state+".jpg";
+		}
+
+		function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+		function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("dragged-id");
+            ev.target.appendChild(document.getElementById(data));
+        }
+
+	</script>
+</body>
+</html>
